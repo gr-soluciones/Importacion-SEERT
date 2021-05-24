@@ -2,11 +2,13 @@ DROP VIEW IF EXISTS GR_PRODUCTOS_fix_NPARTE;
 GO
 CREATE VIEW GR_PRODUCTOS_fix_NPARTE AS
 SELECT
-    IIF(
+    MAX(P.Par_Consecutivo) MxId,
+    MIN(P.Par_Consecutivo) MnId,
+    CAST(IIF(
         LEN(P.Par_NoParte) >= 30,
         SUBSTRING(master.dbo.fn_varbintohexstr(HASHBYTES('MD5', Par_NoParte)), 3, 30),
         P.Par_NoParte
-    ) AS NPArte,
+    ) as varchar(30)) AS NParte,
     Max(P.Par_DescripcionEsp) AS DescEsp,
     Max(P.Par_DescripcionIng) AS DescIng,
     CASE
@@ -30,22 +32,31 @@ SELECT
     IIf(
         Max(vf.Fra_FraccionMex) IS NULL
         Or Max(vf.Fra_FraccionMex) = '',
-        CONCAT('__', Min(P.Par_Consecutivo)),
+        MAX(pfMX.Fra_Fraccion),
         Max(vf.Fra_FraccionMex)
     ) AS FracMex,
     IIf(
         Max([Fra_FraccionUsa1]) = ''
         Or Max([Fra_FraccionUsa1]) IS NULL,
-        Max([Fra_FraccionUsa2]),
+        IIF(
+            Max([Fra_FraccionUsa2]) IS NULL,
+            MAX(pfUS.Fra_Fraccion),
+            Max([Fra_FraccionUsa2])),
         Max([Fra_FraccionUsa1])
     ) AS ArancelUs,
     Avg(P.Par_FactConvCom) AS FactConv,
     'Importado desde el sistema SEERT' AS Nota,
     'NO' AS Desp,
-    'NO' AS Merm
+    'NO' AS Merm,
+    MAX(P.Med_Comercial) AS UMComercial,
+    MAX(P.Par_FactConvCom) AS FactConvUComer,
+--     Detalles
+    MAX(Par_PesoUnit) AS PesoUnitKG
 FROM
     Ca_Parte AS P
     LEFT JOIN vFracciones AS vf ON P.Par_Consecutivo = vf.Par_Consecutivo
     LEFT JOIN Ca_FArancelaria ON vf.Fra_FraccionMex = Ca_FArancelaria.Fra_Fraccion
+    LEFT JOIN Ca_ParteFraccion pfMX ON P.Par_Consecutivo = pfMX.Par_Consecutivo AND pfMX.Pai_Clave = 'MEX'
+    LEFT JOIN Ca_ParteFraccion pfUS ON P.Par_Consecutivo = pfUS.Par_Consecutivo AND pfUS.Pai_Clave = 'USA'
 GROUP BY
     P.Par_NoParte;
