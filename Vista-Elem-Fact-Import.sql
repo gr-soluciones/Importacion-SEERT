@@ -21,7 +21,7 @@ SELECT
    WHEN (MAX(Di_FacturaDet.TiM_Clave)) = 'PT' THEN 'Producto Terminado'
    WHEN (MAX(Di_FacturaDet.TiM_Clave)) = 'SUB' THEN 'Subensamble'
   END AS TipoParte,
- SUM(Di_FacturaDet.FId_CostoUnit) AS FId_CostoUnit,
+ AVG(Di_FacturaDet.FId_CostoUnit) AS FId_CostoUnit,
  MAX(Di_FacturaDet.FId_DescripcionEsp) AS FId_DescripcionEsp,
  MAX(Di_FacturaDetUSA.FId_DescripcionIng) AS FId_DescripcionIng,
  MAX(Di_FacturaDet.Med_Clave) AS Med_Clave,

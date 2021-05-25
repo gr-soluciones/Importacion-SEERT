@@ -16,16 +16,5 @@ values ('');
 insert into CLVPEDIM (CP_CLVPED)
 values ('');
 
-insert into MEDIDAS (ME_UMEDIDA)
-values ('MP');
-insert into MEDIDAS (ME_UMEDIDA)
-values ('PT');
-insert into MEDIDAS (ME_UMEDIDA)
-values ('');
-insert into MEDIDAS (ME_UMEDIDA)
-values ('DESMP');
-insert into MEDIDAS (ME_UMEDIDA)
-values ('EQ');
-
 select *
 from MEDIDAS;
