@@ -1,6 +1,10 @@
 # Importacion-SEERT
 Scripts y utilidades para migrar datos desde una BD del sistema SEERT (MSSQL) hacia una DB de GRSA (Firebird).
 
+### Carpetas
+SQL => Scirpts SQL para generar vistas, tablas y otros ajustes en la información.
+OtrosScripts => Scripts Scala para generar una serie de archivos SQL para insertar los datos directamente.
+
 ### Este repositorio contienen los siguientes scripts:
 - [Consulta para encontrar las tablas que tengan alguna relacion con cierta tabla](Tablas-Relaciones.sql)
 - [Encontrar todas las tablas que tienen cierta columna](Find-Tables-By-Row-Name.sql)
