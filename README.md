@@ -17,4 +17,4 @@ OtrosScripts => Scripts Scala para generar una serie de archivos SQL para insert
 - [Vista con los datos de los pedimentos de exportacion](SQL/PedimentosEXP.sql)
 - [Vista con los datos de los pedimentos de Importacion](SQL/PedimentosIMP.sql)
 - [Tabla con los elementos de las facturas de exportacion](SQL/Tabla_ElemFactExp.sql)
-- [Vista con los elementos de las facturas de Importacion](SQL/Vista-Elem-Fact-Import.sql)
+- [Tabla con los elementos de las facturas de Importacion](SQL/Tabla-ElemFactImp.sql)

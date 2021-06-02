@@ -39,3 +39,56 @@ GROUP BY
     cast(Ca_ClientePermiso.Cli_Consecutivo AS varchar),
     Ca_ClientePermiso.ClP_Valor
     )
+
+DROP VIEW IF EXISTS GR_CLIENTES_MAX;
+go
+CREATE VIEW GR_CLIENTES_MAX AS
+SELECT
+       D.Dir_Consecutivo,
+       c.Cli_Corto AS NombreCorto,
+       c.Cli_Razon AS RazonSocial,
+       ISNULL(
+           IIF(
+               LEN(TRIM(RFCS.ClP_Valor)) = 0,
+               CAST(c.Cli_Consecutivo AS VARCHAR),
+               TRIM(RFCS.ClP_Valor)
+               ),
+           CAST(c.Cli_Consecutivo AS VARCHAR)
+           ) AS RFC,
+       IIF(
+           c.Cli_TipoEmpresa = 'EXTRANJERA',
+           'Extranjero',
+           IIf(c.Cli_TipoEmpresa = 'IMMEX',
+               'Nacional',
+               Null
+               )
+           ) AS ORIGEN,
+       IIf(c.Cli_TipoProvee = 'P',
+           'Proveedor',
+           'Cliente'
+           ) AS Tipo,
+       d.Dir_Calle AS Calle,
+       d.Dir_NoExt AS NoExt,
+       d.Dir_NoInt AS NoInt,
+       d.Dir_Colonia AS Colonia,
+       d.Dir_Ciudad AS Ciudad,
+       d.Pai_Clave AS Pais,
+       d.Edo_Clave AS Estado,
+       d.Dir_Telefono AS Telefono,
+       d.Dir_FAX AS FAX
+FROM
+    (
+        Ca_Cliente c
+        LEFT JOIN Ca_ClienteDireccion d ON c.Cli_Consecutivo = d.Cli_Consecutivo
+    )
+    LEFT JOIN (
+        SELECT
+               P.Cli_Consecutivo,
+               P.ClP_Valor
+        FROM Ca_ClientePermiso P WHERE P.ReP_Clave = 'RFC'
+        UNION
+        SELECT
+               P.Cli_Consecutivo,
+               P.ClP_Valor
+        FROM Ca_ClientePermiso P WHERE P.ReP_Clave = 'IRS'
+        ) AS RFCs ON c.Cli_Consecutivo = RFCS.Cli_Consecutivo;

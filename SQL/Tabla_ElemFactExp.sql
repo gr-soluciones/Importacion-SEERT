@@ -8,32 +8,33 @@ drop table if exists GR_ELEMFACTEXP;
 go
 create table GR_ELEMFACTEXP
 (
+    _Fex_Consecutivo int,
+    _Fed_Consecutivo int,
     EE_NFACTEXP        VARCHAR(30)                not null,
     EE_NPARTE          VARCHAR(30)                not null,
     EE_TIPOMATEXP      VARCHAR(20)                not null,
-    _Fex_Consecutivo int,
     EE_NPTIPO          CHAR(3),
     EE_DESCESP         VARCHAR(150),
     EE_DESCING         VARCHAR(150),
-    EE_TOTALMAT        NUMERIC default 0,
-    EE_MATNONDUT       NUMERIC default 0,
-    EE_MATDUTIABLE     NUMERIC default 0,
-    EE_EMPNONDUT       NUMERIC default 0,
-    EE_EMPDUTIABLE     NUMERIC default 0,
-    EE_VALDUTIABLE     NUMERIC default 0,
-    EE_OTRDUTIABLE     NUMERIC default 0,
+    EE_TOTALMAT        decimal(18, 6) default 0,
+    EE_MATNONDUT       decimal(18, 6) default 0,
+    EE_MATDUTIABLE     decimal(18, 6) default 0,
+    EE_EMPNONDUT       decimal(18, 6) default 0,
+    EE_EMPDUTIABLE     decimal(18, 6) default 0,
+    EE_VALDUTIABLE     decimal(18, 6) default 0,
+    EE_OTRDUTIABLE     decimal(18, 6) default 0,
     EE_EMPAQUE         VARCHAR(5),
-    EE_PESOUNIT        NUMERIC default 0,
-    EE_PESOBRUTO       NUMERIC default 0,
-    EE_PESONETO        NUMERIC default 0,
+    EE_PESOUNIT        decimal(18, 6) default 0,
+    EE_PESOBRUTO       decimal(18, 6) default 0,
+    EE_PESONETO        decimal(18, 6) default 0,
     EE_ARANCELUS       VARCHAR(10),
     EE_ARANCELMX       VARCHAR(10),
-    EE_PESOEMPAQUE     NUMERIC default 0,
-    EE_CANTEMPAQUE     NUMERIC default 0,
+    EE_PESOEMPAQUE     decimal(18, 6) default 0,
+    EE_CANTEMPAQUE     decimal(18, 6) default 0,
     EE_TIPOPARTE       VARCHAR(20),
     EE_UMPARTE         VARCHAR(5),
     EE_UMFRACCION      VARCHAR(5),
-    EE_FCONVERSION     NUMERIC default 0,
+    EE_FCONVERSION     decimal(18, 6) default 0,
     EE_PAISDESTINO     VARCHAR(3),
     EE_DESTINO         VARCHAR(20),
     EE_NPARTEASOCIADO  VARCHAR(30),
@@ -42,17 +43,17 @@ create table GR_ELEMFACTEXP
     EE_NAFTA           CHAR(2)       default 'NO' not null,
     EE_PAISORIGEN      VARCHAR(3),
     EE_CLAVEFDA        CHAR(3),
-    EE_COSTOHR         NUMERIC default 0,
-    EE_ESTANDARPROD    NUMERIC default 0,
+    EE_COSTOHR         decimal(18, 6) default 0,
+    EE_ESTANDARPROD    decimal(18, 6) default 0,
     EE_ENSAMBLADOMX    CHAR(2),
-    EE_MATDUTUSD       NUMERIC default 0,
-    EE_MATDUTMN        NUMERIC default 0,
-    EE_MATNODUSD       NUMERIC default 0,
-    EE_MATNODMN        NUMERIC default 0,
-    EE_EMPUSD          NUMERIC default 0,
-    EE_EMPMN           NUMERIC default 0,
-    EE_AGREGUSD        NUMERIC default 0,
-    EE_AGREGMN         NUMERIC default 0,
+    EE_MATDUTUSD       decimal(18, 6) default 0,
+    EE_MATDUTMN        decimal(18, 6) default 0,
+    EE_MATNODUSD       decimal(18, 6) default 0,
+    EE_MATNODMN        decimal(18, 6) default 0,
+    EE_EMPUSD          decimal(18, 6) default 0,
+    EE_EMPMN           decimal(18, 6) default 0,
+    EE_AGREGUSD        decimal(18, 6) default 0,
+    EE_AGREGMN         decimal(18, 6) default 0,
     EE_FPAGO           CHAR(3),
     EE_SECUENCIAPEDEXP INTEGER,
     constraint ELEMFACTEXP_PK
@@ -60,14 +61,20 @@ create table GR_ELEMFACTEXP
 );
 go
 
+-- peso bruto
+
 -- Crear Registros
 insert into GR_ELEMFACTEXP(_Fex_Consecutivo,
+                           _Fed_Consecutivo,
+                           EE_SECUENCIAPEDEXP,
                            EE_NFACTEXP, EE_NPARTE, EE_TIPOMATEXP, EE_NPTIPO,
                            EE_UMPARTE,
                            EE_DESCESP, EE_TOTALMAT,
                            EE_PESOUNIT,EE_PESOBRUTO, EE_PESONETO)
 SELECT
        MAX(De_Factura.Fex_Consecutivo) AS _Fex_Consecutivo,
+       MAX(Fed_Consecutivo) AS Fed_Consecutivo,
+       MAX(De_FacturaDet.Fed_SecuenciaPed) AS EE_SECUENCIAPEDEXP,
     LEFT(De_Factura.FEx_Folio, 30),
     LEFT(De_FacturaDet.Fed_NoParte, 30),
     CASE
@@ -92,7 +99,8 @@ SELECT
     LEFT(MAX(De_FacturaDet.Fed_DescripcionEsp), 150) AS Fed_DescripcionEsp,
     SUM(De_FacturaDet.Fed_Cantidad) AS Fed_Cantidad,
     AVG(De_FacturaDet.Fed_PesoUnit) AS Fed_PesoUnit,
-       SUM(De_FacturaDet.Fed_PesoBru) AS Fed_PesoBru,
+--        SUM(De_FacturaDet.Fed_PesoBru) AS Fed_PesoBru,
+       0,
     SUM(De_FacturaDet.Fed_PesoNeto) AS Fed_PesoNeto
 FROM
     De_FacturaDet
@@ -109,7 +117,6 @@ GROUP BY De_Factura.FEx_Folio,
         WHEN (De_FacturaDet.TiM_Clave) = 'SUB' THEN 'Producto Terminado'
         WHEN (De_FacturaDet.TiM_Clave) = 'DESMP' THEN 'Producto Terminado'
     END;
-
 GO
 
 -- Actualizar
@@ -121,13 +128,13 @@ FROM GR_ELEMFACTEXP
     INNER JOIN
 (
     select
-           _Fex_Consecutivo,
+           _Fed_Consecutivo,
         MAX(Fed_DescripcionIng) as Fed_DescripcionIng
      from
     GR_ELEMFACTEXP AS e
     INNER JOIN De_FacturaDetUSA ON (
-        e._Fex_Consecutivo = De_FacturaDetUSA.Fex_Consecutivo
-    ) GROUP BY _Fex_Consecutivo) AS T on t._Fex_Consecutivo = GR_ELEMFACTEXP._Fex_Consecutivo;
+        e._Fed_Consecutivo = De_FacturaDetUSA.Fed_Consecutivo
+    ) GROUP BY _Fed_Consecutivo) AS T on t._Fed_Consecutivo = GR_ELEMFACTEXP._Fed_Consecutivo;
 
 -- Actualizar 2
 UPDATE
@@ -146,40 +153,58 @@ FROM
      GR_ELEMFACTEXP
      INNER JOIN (
          select
-                Fex_Consecutivo as Fex_Consecutivo,
+                Fed_Consecutivo as Fed_Consecutivo,
+
                 MAX(De_PedimentoDet.Med_Fraccion) AS MedFraccion,
                 COALESCE(MAX(De_PedimentoDet.Fra_FraccionUSA), '99999999') AS FUSA,
-                COALESCE(MAX(De_PedimentoDet.Fra_Fraccion), '88888888') AS FUMEX,
+                COALESCE(MAX(Fra_Fraccion), '88888888') AS FUMEX,
                 MAX(De_PedimentoDet.Pai_Origen) AS PO,
                 MAX(De_PedimentoDet.Pai_Destino) AS De,
                 RIGHT(YEAR(MAX(De_Pedimento.Pex_FechaPago)), 2) + ' ' + LEFT(MAX(De_Pedimento.Adu_AduanaSecc), 2) + ' ' + MAX(De_Pedimento.AgP_Patente) + ' ' + MAX(De_Pedimento.Pex_Folio) AS FOL,
                 MAX(De_Pedimento.Pex_FechaPago) AS FP,
+
                 AVG(
-                    IIF(De_PedimentoDet.Ped_CostoUnit = 0 or (De_PedimentoDet.Ped_CostoUnitAdu / De_PedimentoDet.Ped_CostoUnit) = 0,
-                        0,
-                        De_PedimentoDet.Ped_CostoUnitVA /(
-                            De_PedimentoDet.Ped_CostoUnitAdu / De_PedimentoDet.Ped_CostoUnit
-                            ))
+--                     De_PedimentoDet.Ped_CostoUnit,
+                        De_PedimentoDet.Ped_CostoUnitVA / (
+                            IIF(De_Pedimento.Pex_TipoCambio = 0,
+                                IIF(De_PedimentoDet.Ped_CostoUnitAdu / De_PedimentoDet.Ped_CostoUnit = 0, 1, De_PedimentoDet.Ped_CostoUnitAdu / De_PedimentoDet.Ped_CostoUnit),
+                                De_Pedimento.Pex_TipoCambio)
+                            )
                     ) AS VBL,
                 AVG(
-                    IIF(De_PedimentoDet.Ped_CostoUnit = 0 or (De_PedimentoDet.Ped_CostoUnitAdu / De_PedimentoDet.Ped_CostoUnit) = 0,
-                        0,
-                        De_PedimentoDet.Ped_CostoUnit - (
+                    De_PedimentoDet.Ped_CostoUnit - (
                             De_PedimentoDet.Ped_CostoUnitVA /(
-                                De_PedimentoDet.Ped_CostoUnitAdu / De_PedimentoDet.Ped_CostoUnit
+                                IIF(De_Pedimento.Pex_TipoCambio = 0,
+                                    IIF(De_PedimentoDet.Ped_CostoUnitAdu / De_PedimentoDet.Ped_CostoUnit = 0, 1, De_PedimentoDet.Ped_CostoUnitAdu / De_PedimentoDet.Ped_CostoUnit),
+                                    De_Pedimento.Pex_TipoCambio)
                                 )
                             )
-                        )
                     ) AS MBL
 
          FROM
               GR_ELEMFACTEXP AS e
                   INNER JOIN De_PedimentoDet ON (
-                      e._Fex_Consecutivo = De_PedimentoDet.Fex_Consecutivo
+                      e._Fed_Consecutivo = De_PedimentoDet.Fed_Consecutivo
                       )
                   INNER JOIN De_Pedimento ON(
                       De_PedimentoDet.Pex_Consecutivo = De_Pedimento.Pex_Consecutivo
                       )
-         GROUP BY Fex_Consecutivo
-         ) AS TB ON TB.Fex_Consecutivo = _Fex_Consecutivo;
+         GROUP BY Fed_Consecutivo
+         ) AS TB ON TB.Fed_Consecutivo = _Fed_Consecutivo;
 
+
+-- update
+--     GR_ELEMFACTEXP
+-- set EE_VALDUTIABLE = f.FEx_TipoCambioUSD
+-- from GR_ELEMFACTEXP
+-- inner join De_Factura f on f.FEx_Consecutivo = _Fex_Consecutivo
+-- where GR_ELEMFACTEXP.EE_VALDUTIABLE = 0;
+
+-- update
+--     GR_ELEMFACTEXP
+-- set EE_MATDUTIABLE = 1
+-- where EE_MATDUTIABLE = 0;
+--
+-- select EE_MATDUTIABLE, * from GR_ELEMFACTEXP
+-- inner join De_Factura f on f.FEx_Consecutivo = _Fex_Consecutivo
+-- where GR_ELEMFACTEXP.EE_MATDUTIABLE = 0;

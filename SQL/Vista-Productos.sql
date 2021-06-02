@@ -4,6 +4,7 @@ CREATE VIEW GR_PRODUCTOS_fix_NPARTE AS
 SELECT
     MAX(P.Par_Consecutivo) MxId,
     MIN(P.Par_Consecutivo) MnId,
+    P.Par_NoParte AS ORG,
     CAST(IIF(
         LEN(P.Par_NoParte) >= 30,
         SUBSTRING(master.dbo.fn_varbintohexstr(HASHBYTES('MD5', Par_NoParte)), 3, 30),
@@ -60,3 +61,4 @@ FROM
     LEFT JOIN Ca_ParteFraccion pfUS ON P.Par_Consecutivo = pfUS.Par_Consecutivo AND pfUS.Pai_Clave = 'USA'
 GROUP BY
     P.Par_NoParte;
+
