@@ -7,7 +7,7 @@ Scripts y utilidades para migrar datos desde una BD del sistema SEERT (MSSQL) ha
 |SQL|Scirpts SQL para generar vistas, tablas y otros ajustes en la información.|
 |OtrosScripts|Scripts para generar archivos SQL para insertar datos.|
 |Validaciones|Scripts para validar los datos valtantes.|
-|Procesos|Provesos de la BD de GRSA para importar datos.|
+|Procesos|Procesos de la BD de GRSA para importar datos.|
 
 ### Este repositorio contienen los siguientes scripts:
 - [Consulta para encontrar las tablas que tengan alguna relacion con cierta tabla](SQL/Tablas-Relaciones.sql)
