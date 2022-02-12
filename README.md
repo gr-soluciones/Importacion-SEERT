@@ -41,7 +41,7 @@ Scripts y utilidades para migrar datos desde una BD del sistema SEERT (MSSQL) ha
 Mover el archivo .bak a la carpeta del volumem configurado en MSSL
 ```bash
 mv /grsc/Clientes/ClientesGRSA/Sunrise\ Jewelry/BC6P93-M/SEERT_Sunrise202.bak /grsc/Clientes/ClientesGRSA/ABASEDATOS/mssql/
-# docker exec -it mssql /opt/mssql-tools/bin/sqlcmd -S localhost -U sa -P 'mssql(!)Password'
+# docker exec -it mssql /opt/mssql-tools/bin/sqlcmd -S localhost -U sa -P 'mssql(!)Password' # <- Para iniciar una sesión T-SQL
 ```
 Obtener el nombre de la base de datos.
 ```tsql
