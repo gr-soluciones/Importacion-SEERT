@@ -36,4 +36,5 @@ Scripts y utilidades para migrar datos desde una BD del sistema SEERT (MSSQL) ha
   - host: `192.168.1.151`
   - User: `sa`
   - Password: `mssql(!)Password`
+  - Port: `1433`
 #### 2. Restaurar backup:
