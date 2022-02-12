@@ -25,3 +25,14 @@ Scripts y utilidades para migrar datos desde una BD del sistema SEERT (MSSQL) ha
 - [Elementos de las facturas de exportacion](SQL/Tabla_ElemFactExp.sql)
 - [Elementos de las facturas de importacion](SQL/Tabla-ElemFactImp.sql)
 - [Descargas](SQL/Vista-Descargas.sql)
+
+## Procedimiento
+1. Conectarse al servidor para preparar la BD MSSQL.
+  ```bash
+  ssh root@192.168.1.151
+  docker start mssql
+  ```
+  Datos del servidor MSSQL:
+  - host: 192.168.1.151
+  - User: sa
+2. Restaurar backup:
