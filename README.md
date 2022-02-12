@@ -38,3 +38,39 @@ Scripts y utilidades para migrar datos desde una BD del sistema SEERT (MSSQL) ha
   - Password: `mssql(!)Password`
   - Port: `1433`
 #### 2. Restaurar backup:
+Mover el archivo .bak a la carpeta del volumem configurado en MSSL
+```bash
+mv /grsc/Clientes/ClientesGRSA/Sunrise\ Jewelry/BC6P93-M/SEERT_Sunrise202.bak /grsc/Clientes/ClientesGRSA/ABASEDATOS/mssql/
+# docker exec -it mssql /opt/mssql-tools/bin/sqlcmd -S localhost -U sa -P 'mssql(!)Password'
+```
+Obtener el nombre de la base de datos.
+```tsql
+RESTORE HEADERONLY FROM DISK = N'/var/opt/mssql/data/SEERT_Sunrise202.bak';
+```
+Listar los archivos que componene el backup ya que se deberán de reubicar.
+```tsql
+RESTORE FILELISTONLY FROM  DISK = N'/var/opt/mssql/data/SEERT_Sunrise202.bak';
+```
+Restarurar la BD (suponiendo que la salida del T-SQL anterior regresó los `LogicalName` `SEERMain` y `SEERMain_log`)
+```tsql
+RESTORE DATABASE [SEERT_Sunrise202]
+FROM
+  DISK = N'/var/opt/mssql/data/SEERT_Sunrise202.bak' 
+WITH
+  NORECOVERY
+  , FILE = 1
+  , MOVE 'SEERMain' TO N'/var/opt/mssql/data/SEERT_Sunrise202.mdf'
+  , MOVE 'SEERMain_log' TO N'/var/opt/mssql/data/SEERT_Sunrise202_0.LDF'
+;
+GO
+```
+Validar la restauración
+```tsql
+USE SEERT_Sunrise202;
+SELECT
+  *
+FROM
+  SYSOBJECTS
+WHERE
+  xtype = 'U';
+```
