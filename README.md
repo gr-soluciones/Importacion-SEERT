@@ -27,12 +27,13 @@ Scripts y utilidades para migrar datos desde una BD del sistema SEERT (MSSQL) ha
 - [Descargas](SQL/Vista-Descargas.sql)
 
 ## Procedimiento
-1. Conectarse al servidor para preparar la BD MSSQL.
+#### 1. Conectarse al servidor para preparar la BD MSSQL.
   ```bash
   ssh root@192.168.1.151
   docker start mssql
   ```
   Datos del servidor MSSQL:
-  - host: 192.168.1.151
-  - User: sa
-2. Restaurar backup:
+  - host: `192.168.1.151`
+  - User: `sa`
+  - Password: `mssql(!)Password`
+#### 2. Restaurar backup:
