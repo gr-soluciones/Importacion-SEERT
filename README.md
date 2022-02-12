@@ -57,7 +57,7 @@ RESTORE DATABASE [SEERT_Sunrise202]
 FROM
   DISK = N'/var/opt/mssql/data/SEERT_Sunrise202.bak' 
 WITH
-  NORECOVERY
+  RECOVERY
   , FILE = 1
   , MOVE 'SEERMain' TO N'/var/opt/mssql/data/SEERT_Sunrise202.mdf'
   , MOVE 'SEERMain_log' TO N'/var/opt/mssql/data/SEERT_Sunrise202_0.LDF'
